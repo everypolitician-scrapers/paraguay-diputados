@@ -8,17 +8,17 @@ require 'open-uri'
 require 'date'
 require 'csv'
 
-require 'colorize'
-require 'pry'
-require 'csv'
-require 'open-uri/cached'
-OpenURI::Cache.cache_path = '.cache'
+# require 'colorize'
+# require 'pry'
+# require 'csv'
+# require 'open-uri/cached'
+# OpenURI::Cache.cache_path = '.cache'
 
 @BASE = 'http://www.diputados.gov.py'
 
 def noko_for(url)
   # url.prepend @BASE unless url.start_with? 'http:'
-  warn "Getting #{url}"
+  # warn "Getting #{url}"
   Nokogiri::HTML(open(url).read) 
 end
 
@@ -54,7 +54,7 @@ def scrape_mp(url, data)
     tel: datos.xpath('.//td[contains(text(),"Teléfono")]/following-sibling::td').text.gsub(/[[:space:]]+/,' ').strip,
   })
 
-  puts data
+  # puts data
   ScraperWiki.save_sqlite([:id, :term], data)
 
 end
