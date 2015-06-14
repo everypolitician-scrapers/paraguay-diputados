@@ -35,6 +35,7 @@ def scrape_list(url)
       id: File.basename(tds[0].css('img/@src').text, '.jpg'),
       name: tds[1].css('a').text.strip,
       party: tds[2].text.strip,
+      party_id: tds[2].text.strip,
       email: tds[3].css('a').text.strip,
       image: tds[0].css('img/@src').text, 
       source: link,
