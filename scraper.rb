@@ -41,23 +41,60 @@ class MemberPage < Scraped::HTML
   end
 end
 
+class MembersPage < Scraped::HTML
+  field :members do
+    noko.css('table.tex tr').drop(1).map do |row|
+      MemberRow.new(response: response, noko: row)
+    end
+  end
+
+  class MemberRow < Scraped::HTML
+    field :id do
+      File.basename(tds[0].css('img/@src').text, '.jpg')
+    end
+
+    field :name do
+      tds[1].css('a').text.strip
+    end
+
+    field :party do
+      tds[2].text.strip
+    end
+
+    field :party_id do
+      tds[2].text.strip
+    end
+
+    field :email do
+      tds[3].css('a').text.strip
+    end
+
+    field :image do
+      img = tds[0].css('img/@src').text
+      return if img.to_s.empty?
+      URI.join(url, img).to_s
+    end
+
+    field :source do
+      URI.join(url, tds[1].css('a/@href').text).to_s
+    end
+
+    field :term do
+      '2013'
+    end
+
+    private
+
+    def tds
+      noko.css('td')
+    end
+  end
+end
+
 def scrape_list(url)
-  noko = noko_for(url)
-  noko.css('table.tex tr').drop(1).each do |row|
-    tds = row.css('td')
-    link = URI.join(url, tds[1].css('a/@href').text).to_s
-    data = { 
-      id: File.basename(tds[0].css('img/@src').text, '.jpg'),
-      name: tds[1].css('a').text.strip,
-      party: tds[2].text.strip,
-      party_id: tds[2].text.strip,
-      email: tds[3].css('a').text.strip,
-      image: tds[0].css('img/@src').text, 
-      source: link,
-      term: '2013',
-    }
-    data[:image] &&= URI.join(url, data[:image]).to_s
-    scrape_mp(link, data)
+  MembersPage.new(response: Scraped::Request.new(url: url).response).members.each do |mem|
+    data = mem.to_h
+    scrape_mp(data[:source], data)
   end
 end
 
