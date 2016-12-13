@@ -13,9 +13,7 @@ OpenURI::Cache.cache_path = '.cache'
 @BASE = 'http://www.diputados.gov.py'
 
 def noko_for(url)
-  # url.prepend @BASE unless url.start_with? 'http:'
-  # warn "Getting #{url}"
-  Nokogiri::HTML(open(url).read) 
+  Nokogiri::HTML(open(url).read)
 end
 
 def datefrom(date)
