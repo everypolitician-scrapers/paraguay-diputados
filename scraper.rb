@@ -10,8 +10,6 @@ require 'scraperwiki'
 require 'open-uri/cached'
 OpenURI::Cache.cache_path = '.cache'
 
-@BASE = 'http://www.diputados.gov.py'
-
 def noko_for(url)
   Nokogiri::HTML(open(url).read)
 end
@@ -54,5 +52,5 @@ def scrape_mp(url, data)
 
 end
 
-scrape_list(@BASE + '/ww2/?pagina=dip-listado')
+scrape_list('http://www.diputados.gov.py/ww2/?pagina=dip-listado')
 
