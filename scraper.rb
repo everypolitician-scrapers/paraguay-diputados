@@ -5,6 +5,7 @@ require 'csv'
 require 'date'
 require 'nokogiri'
 require 'open-uri'
+require 'scraped'
 require 'scraperwiki'
 
 require 'open-uri/cached'
@@ -16,6 +17,22 @@ end
 
 def datefrom(date)
   Date.parse(date)
+end
+
+class MemberPage < Scraped::HTML
+  field :constituency do
+    datos.xpath('.//td[contains(text(),"Departamento")]/following-sibling::td').text.gsub(/[[:space:]]+/,' ').strip
+  end
+
+  field :tel do
+    datos.xpath('.//td[contains(text(),"Teléfono")]/following-sibling::td').text.gsub(/[[:space:]]+/,' ').strip
+  end
+
+  private
+
+  def datos
+    noko.css('table.tex').first
+  end
 end
 
 def scrape_list(url)
@@ -39,17 +56,9 @@ def scrape_list(url)
 end
 
 def scrape_mp(url, data)
-  noko = noko_for(url)
-  datos = noko.css('table.tex').first
-
-  data.merge!({
-    constituency: datos.xpath('.//td[contains(text(),"Departamento")]/following-sibling::td').text.gsub(/[[:space:]]+/,' ').strip,
-    tel: datos.xpath('.//td[contains(text(),"Teléfono")]/following-sibling::td').text.gsub(/[[:space:]]+/,' ').strip,
-  })
-
-  # puts data
+  page = MemberPage.new(response: Scraped::Request.new(url: url).response)
+  data.merge!(page.to_h)
   ScraperWiki.save_sqlite([:id, :term], data)
-
 end
 
 scrape_list('http://www.diputados.gov.py/ww2/?pagina=dip-listado')
