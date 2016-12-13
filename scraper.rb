@@ -54,7 +54,19 @@ class MembersPage < Scraped::HTML
     end
 
     field :name do
-      tds[1].css('a').text.strip
+      "#{given_name} #{family_name}"
+    end
+
+    field :sort_name do
+      tds[1].css('a').text.tidy
+    end
+
+    field :family_name do
+      sort_name.split(',').first.tidy
+    end
+
+    field :given_name do
+      sort_name.split(',').last.tidy
     end
 
     field :party do
