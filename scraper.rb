@@ -54,11 +54,5 @@ def scrape_mp(url, data)
 
 end
 
-term = {
-  id: 2013,
-  name: '2013–2018',
-  start_date: '2013-04-21',
-}
-ScraperWiki.save_sqlite([:id], term, 'terms')
 scrape_list(@BASE + '/ww2/?pagina=dip-listado')
 
