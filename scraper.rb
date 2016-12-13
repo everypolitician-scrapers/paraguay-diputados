@@ -11,6 +11,12 @@ require 'scraperwiki'
 require 'open-uri/cached'
 OpenURI::Cache.cache_path = '.cache'
 
+class String
+  def tidy
+    gsub(/[[:space:]]+/, ' ').strip
+  end
+end
+
 def noko_for(url)
   Nokogiri::HTML(open(url).read)
 end
@@ -21,11 +27,11 @@ end
 
 class MemberPage < Scraped::HTML
   field :constituency do
-    datos.xpath('.//td[contains(text(),"Departamento")]/following-sibling::td').text.gsub(/[[:space:]]+/,' ').strip
+    datos.xpath('.//td[contains(text(),"Departamento")]/following-sibling::td').text.tidy
   end
 
   field :tel do
-    datos.xpath('.//td[contains(text(),"Teléfono")]/following-sibling::td').text.gsub(/[[:space:]]+/,' ').strip
+    datos.xpath('.//td[contains(text(),"Teléfono")]/following-sibling::td').text.tidy
   end
 
   private
