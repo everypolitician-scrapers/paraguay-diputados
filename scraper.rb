@@ -6,17 +6,13 @@ require 'pry'
 require 'scraped'
 require 'scraperwiki'
 
-# require 'open-uri/cached'
-# OpenURI::Cache.cache_path = '.cache'
-require 'scraped_page_archive/open-uri'
+require 'open-uri/cached'
+OpenURI::Cache.cache_path = '.cache'
+# require 'scraped_page_archive/open-uri'
 
 class MemberPage < Scraped::HTML
   field :constituency do
     datos.xpath('.//td[contains(text(),"Departamento")]/following-sibling::td').text.tidy
-  end
-
-  field :tel do
-    datos.xpath('.//td[contains(text(),"Teléfono")]/following-sibling::td').text.tidy
   end
 
   private
@@ -64,8 +60,12 @@ class MembersPage < Scraped::HTML
       tds[2].text.strip
     end
 
+    field :phone do
+      tds[3].text.strip
+    end
+
     field :email do
-      tds[3].css('a').text.strip
+      tds[4].css('a').text.strip
     end
 
     field :image do
