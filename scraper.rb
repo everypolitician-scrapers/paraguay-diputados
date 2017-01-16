@@ -2,30 +2,12 @@
 # encoding: utf-8
 # frozen_string_literal: true
 
-require 'csv'
-require 'date'
-require 'nokogiri'
-require 'open-uri'
 require 'pry'
 require 'scraped'
 require 'scraperwiki'
 
 require 'open-uri/cached'
 OpenURI::Cache.cache_path = '.cache'
-
-class String
-  def tidy
-    gsub(/[[:space:]]+/, ' ').strip
-  end
-end
-
-def noko_for(url)
-  Nokogiri::HTML(open(url).read)
-end
-
-def datefrom(date)
-  Date.parse(date)
-end
 
 class MemberPage < Scraped::HTML
   field :constituency do
