@@ -87,18 +87,15 @@ class MembersPage < Scraped::HTML
   end
 end
 
-def scrape_list(url)
-  MembersPage.new(response: Scraped::Request.new(url: url).response).members.each do |mem|
-    data = mem.to_h
-    scrape_mp(data[:source], data)
-  end
+def scrape(h)
+  url, klass = h.to_a.first
+  klass.new(response: Scraped::Request.new(url: url).response)
 end
 
-def scrape_mp(url, data)
-  page = MemberPage.new(response: Scraped::Request.new(url: url).response)
-  data.merge!(page.to_h)
-  puts data
-  ScraperWiki.save_sqlite(%i(id term), data)
+start = 'http://www.diputados.gov.py/ww2/?pagina=dip-listado'
+data = scrape(start => MembersPage).members.map do |mem|
+  mem.to_h.merge(scrape(mem.source => MemberPage).to_h)
 end
+# puts data
 
-scrape_list('http://www.diputados.gov.py/ww2/?pagina=dip-listado')
+ScraperWiki.save_sqlite(%i(id term), data)
