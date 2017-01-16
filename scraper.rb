@@ -1,10 +1,12 @@
 #!/bin/env ruby
 # encoding: utf-8
+# frozen_string_literal: true
 
 require 'csv'
 require 'date'
 require 'nokogiri'
 require 'open-uri'
+require 'pry'
 require 'scraped'
 require 'scraperwiki'
 
@@ -113,8 +115,8 @@ end
 def scrape_mp(url, data)
   page = MemberPage.new(response: Scraped::Request.new(url: url).response)
   data.merge!(page.to_h)
-  ScraperWiki.save_sqlite([:id, :term], data)
+  puts data
+  ScraperWiki.save_sqlite(%i(id term), data)
 end
 
 scrape_list('http://www.diputados.gov.py/ww2/?pagina=dip-listado')
-
