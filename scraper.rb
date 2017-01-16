@@ -26,6 +26,8 @@ class MemberPage < Scraped::HTML
 end
 
 class MembersPage < Scraped::HTML
+  decorator Scraped::Response::Decorator::AbsoluteUrls
+
   field :members do
     noko.css('table.tex tr').drop(1).map do |row|
       MemberRow.new(response: response, noko: row)
@@ -66,13 +68,11 @@ class MembersPage < Scraped::HTML
     end
 
     field :image do
-      img = tds[0].css('img/@src').text
-      return if img.to_s.empty?
-      URI.join(url, img).to_s
+      tds[0].css('img/@src').text
     end
 
     field :source do
-      URI.join(url, tds[1].css('a/@href').text).to_s
+      tds[1].css('a/@href').text
     end
 
     field :term do
