@@ -98,4 +98,5 @@ data = scrape(start => MembersPage).members.map do |mem|
 end
 # puts data
 
+ScraperWiki.sqliteexecute('DELETE FROM data') rescue nil
 ScraperWiki.save_sqlite(%i(id term), data)
