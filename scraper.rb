@@ -93,7 +93,7 @@ def scrape(h)
   klass.new(response: Scraped::Request.new(url: url).response)
 end
 
-start = 'http://www.diputados.gov.py/ww2/?pagina=dip-listado'
+start = 'http://www.diputados.gov.py/ww1/?pagina=dip-listado'
 data = scrape(start => MembersPage).members.map do |mem|
   mem.to_h.merge(scrape(mem.source => MemberPage).to_h)
 end
