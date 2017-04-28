@@ -100,4 +100,4 @@ end
 # puts data
 
 ScraperWiki.sqliteexecute('DELETE FROM data') rescue nil
-ScraperWiki.save_sqlite(%i(id term), data)
+ScraperWiki.save_sqlite(%i[id term], data)
