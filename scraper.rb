@@ -23,7 +23,7 @@ class MemberPage < Scraped::HTML
 end
 
 class MembersPage < Scraped::HTML
-  decorator Scraped::Response::Decorator::AbsoluteUrls
+  decorator Scraped::Response::Decorator::CleanUrls
 
   field :members do
     noko.css('table.tex tr').drop(1).map do |row|
