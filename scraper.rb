@@ -6,96 +6,11 @@ require 'pry'
 require 'scraped'
 require 'scraperwiki'
 
+require_rel 'lib'
+
 require 'open-uri/cached'
 OpenURI::Cache.cache_path = '.cache'
 # require 'scraped_page_archive/open-uri'
-
-# Work around broken character encoding
-#   https://robots.thoughtbot.com/fight-back-utf-8-invalid-byte-sequences
-# https://github.com/everypolitician/everypolitician-data/issues/34866
-class String
-  def coerce_utf8
-    self.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '').tidy
-  end
-end
-
-class MemberPage < Scraped::HTML
-  field :constituency do
-    datos.xpath('.//td[contains(text(),"Departamento")]/following-sibling::td').text.coerce_utf8.tidy
-  end
-
-  private
-
-  def datos
-    noko.css('table.tex').first
-  end
-end
-
-class MembersPage < Scraped::HTML
-  decorator Scraped::Response::Decorator::CleanUrls
-
-  field :members do
-    noko.css('table.tex tr').drop(1).map do |row|
-      MemberRow.new(response: response, noko: row)
-    end
-  end
-
-  class MemberRow < Scraped::HTML
-    field :id do
-      File.basename(tds[0].css('img/@src').text, '.jpg')
-    end
-
-    field :name do
-      "#{given_name} #{family_name}"
-    end
-
-    field :sort_name do
-      tds[1].css('a').text.tidy
-    end
-
-    field :family_name do
-      sort_name.split(',').first.tidy
-    end
-
-    field :given_name do
-      sort_name.split(',').last.tidy
-    end
-
-    field :party do
-      tds[2].text.strip
-    end
-
-    field :party_id do
-      tds[2].text.strip
-    end
-
-    field :phone do
-      tds[3].text.strip
-    end
-
-    field :email do
-      tds[4].css('a').text.strip
-    end
-
-    field :image do
-      tds[0].css('img/@src').text
-    end
-
-    field :source do
-      tds[1].css('a/@href').text
-    end
-
-    field :term do
-      '2013'
-    end
-
-    private
-
-    def tds
-      noko.css('td')
-    end
-  end
-end
 
 def scrape(h)
   url, klass = h.to_a.first
