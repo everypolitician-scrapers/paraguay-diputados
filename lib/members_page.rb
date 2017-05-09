@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'scraped'
+require_relative 'py_deputatos'
 
 class MembersPage < PyDeputatos::HTML
   decorator Scraped::Response::Decorator::CleanUrls

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'scraped'
+require_relative 'py_deputatos'
 
 class MemberPage < PyDeputatos::HTML
   field :constituency do
