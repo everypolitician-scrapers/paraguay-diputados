@@ -10,9 +10,18 @@ require 'open-uri/cached'
 OpenURI::Cache.cache_path = '.cache'
 # require 'scraped_page_archive/open-uri'
 
+# Work around broken character encoding
+#   https://robots.thoughtbot.com/fight-back-utf-8-invalid-byte-sequences
+# https://github.com/everypolitician/everypolitician-data/issues/34866
+class String
+  def coerce_utf8
+    self.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '').tidy
+  end
+end
+
 class MemberPage < Scraped::HTML
   field :constituency do
-    datos.xpath('.//td[contains(text(),"Departamento")]/following-sibling::td').text.tidy
+    datos.xpath('.//td[contains(text(),"Departamento")]/following-sibling::td').text.coerce_utf8.tidy
   end
 
   private
