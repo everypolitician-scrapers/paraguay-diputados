@@ -3,36 +3,32 @@
 require 'cgi'
 
 class CloudflareProtectedEmailAddress
-  def initialize(obfuscated)
-    @obfuscated = obfuscated
+  def initialize(obfuscated_address)
+    @obfuscated_address = obfuscated_address
   end
 
   def human_readable
-    return obfuscated unless unescaped.include?('@')
-    unescaped
+    return obfuscated_address unless unencoded_address.include?('@')
+    unencoded_address
   end
 
   private
 
-  attr_accessor :obfuscated
+  attr_accessor :obfuscated_address
 
-  def components
-    obfuscated.scan(/.{2}/).map(&:hex)
-  end
-
-  def obfuscated_characters
-    components.drop(1)
+  def obfuscated_address_as_integers
+    obfuscated_address.scan(/../).map(&:hex)
   end
 
   def key
-    components.first
+    obfuscated_address_as_integers.first
   end
 
-  def escaped
-    obfuscated_characters.map { |char| (char ^ key).to_s(16).prepend('%') }.join
+  def hex_encoded_address
+    obfuscated_address_as_integers.drop(1).map { |char| '%%%02X' % (char ^ key) }.join
   end
 
-  def unescaped
-    CGI.unescape(escaped)
+  def unencoded_address
+    CGI.unescape(hex_encoded_address)
   end
 end
